@@ -14,7 +14,11 @@
         $.post({
             url:"/search",
             data:{
-
+                words:words
+            },
+            method:'POST',
+            success:function (data) {
+                console.log("======>",data)
             }
         })
     })
