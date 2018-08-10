@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"web_view/requsets"
 )
 
 type Template struct {
@@ -36,9 +37,8 @@ func startServer() string {
 	})
 
 	e.POST("/search", func(context echo.Context) error {
-		return context.JSON(http.StatusOK, map[string]interface{}{
-			"data": "fuck",
-		})
+		reply := requsets.GetGoods(1, 10, "fuck")
+		return context.JSON(http.StatusOK, reply)
 	})
 	go e.Start(":" + strconv.Itoa(port))
 
