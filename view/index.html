@@ -9,10 +9,11 @@
 <input type="text" name="" id="words">
 <button id="search"> 查询</button>
 <script>
+    var serverUrl = {{.serverUrl}}
     $('#search').click(function () {
         var words = $("#words").val().trim()
-        $.post({
-            url:"/search",
+        $.ajax( "/search",{
+
             data:{
                 words:words
             },
