@@ -37,7 +37,8 @@ func startServer() string {
 	})
 
 	e.POST("/search", func(context echo.Context) error {
-		reply := requsets.GetGoods(1, 10, "fuck")
+		search := context.FormValue("words")
+		reply := requsets.GetGoods(1, 10, search)
 		return context.JSON(http.StatusOK, reply)
 	})
 	go e.Start(":" + strconv.Itoa(port))
