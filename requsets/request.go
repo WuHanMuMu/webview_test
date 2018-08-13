@@ -1,8 +1,10 @@
-package requsets
+package requests
 
 import (
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/parnurzeal/gorequest"
+	"strings"
 	"time"
 )
 
@@ -27,6 +29,13 @@ type Reply struct {
 	Sppagetrack string `json:"sppagetrack"`
 }
 
+type Product struct {
+	Title    string `json:"title"`
+	Price    string `json:"price"`
+	Url      string `json:"url"`
+	Shipping bool   `json:"shipping"`
+}
+
 func GetGoods(pageNum, pageSize int, keyword string) Reply {
 	apiUrl := "https://www.dhgate.com/dhrec/recommend_for_recentview_featured_left.action"
 	request := gorequest.New()
@@ -49,6 +58,41 @@ func GetGoods(pageNum, pageSize int, keyword string) Reply {
 	return reply
 }
 
+func GetGoodsFromHtml(word string, pageIndex int) []Product {
+	targetUrl := "https://www.dhgate.com/wholesale/search.do?act=search&sus=&searchkey=%s&catalog=#hpsearch1806"
+	word = strings.Replace(word, " ", "+", -1)
+	if pageIndex == 0 {
+		targetUrl = fmt.Sprintf(targetUrl, word)
+	} else {
+		targetUrl = fmt.Sprintf("https://www.dhgate.com/w/%s/%d.html", word, pageIndex)
+	}
+	fmt.Println(targetUrl)
+	doc, _ := goquery.NewDocument(targetUrl)
+	result := make([]Product, 0)
+	doc.Find("#proList .listitem").Each(func(i int, selection *goquery.Selection) {
+		url, _ := selection.Find(".subject").Attr("href")
+		var isShip bool
+		if shipping := selection.Find(".free").Text(); shipping == "Free shipping" {
+			isShip = true
+		} else {
+			isShip = false
+		}
+		title := selection.Find(".subject").Text()
+		if strings.TrimSpace(title) != "" {
+			fmt.Println(title)
+			result = append(result, Product{
+				Title:    title,
+				Url:      url,
+				Price:    selection.Find(".price").Text(),
+				Shipping: isShip,
+			})
+		}
+	})
+	return result
+
+}
+
 func main() {
-	GetGoods(1, 10, "thir")
+	//GetGoods(1, 10, "thir")
+	fmt.Println(GetGoodsFromHtml("t shirt", 1))
 }
