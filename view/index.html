@@ -8,6 +8,12 @@
 <body>
 <input type="text" name="" id="words">
 <button id="search"> 查询</button>
+
+<table>
+    <ul class="lists">
+
+    </ul>
+</table>
 <script>
     var serverUrl = {{.serverUrl}}
     $('#search').click(function () {
@@ -19,7 +25,12 @@
             },
             method:'POST',
             success:function (data) {
-                console.log("======>",data)
+               for (let product of data) {
+                   $(".lists").appendChild($("li").HTML(`
+                     <div> ${product.title} </div>
+                     <div> ${product.url} </div>
+                   `))
+               }
             }
         })
     })
