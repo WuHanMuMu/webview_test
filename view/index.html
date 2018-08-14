@@ -3,36 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>dh</title>
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 </head>
 <body>
-<input type="text" name="" id="words">
-<button id="search"> 查询</button>
-
-<table>
-    <ul class="lists">
-
+<div id="app">
+    <input type="text" name="" id="words" v-model = "searchWord" >
+    <button id="search" v-on:click="search"> 查询</button>
+        <ul v-if="seen">
+        <li v-for="product in products">
+            <div>{{product.title}}
+                 <a :href="product.url"></a></div>
+            <div>{{product.shipping ? "包邮":"不包邮"}}</div>
+            <div>{{product.price}}</div>
+        </li>
     </ul>
-</table>
-<script>
-    var serverUrl = {{.serverUrl}}
-    $('#search').click(function () {
-        var words = $("#words").val().trim()
-        $.ajax( "/search",{
+   
+</div>
 
-            data:{
-                words:words
-            },
-            method:'POST',
-            success:function (data) {
-               for (let product of data) {
-                   $(".lists").appendChild($("li").HTML(`
-                     <div> ${product.title} </div>
-                     <div> ${product.url} </div>
-                   `))
-               }
+
+<script>
+    var app = new Vue({
+        el:"#app",
+        methods:{
+
+            search:function(){
+                var that = this
+                // var formData = new FormData()
+                // formData.set("words",this.searchWord)
+                // formData.set("page",0)
+                axios({
+                    url:"/search",
+                    data:{
+                        words:this.searchWord,
+                        page:0
+                    },
+                    method:"post",
+                    config: { headers: {'Content-Type': 'multipart/x-www-form-urlencoded' }},
+                    transformRequest: [function (data) {
+                        // Do whatever you want to transform the data
+                        let ret = ''
+                        for (let it in data) {
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                    }],
+                })
+                .then((data)=>{
+                    that.seen = true
+                    console.log(data)
+                    that.products = data.data
+                    console.log(that.products)
+                })
             }
-        })
+        },
+        data:{
+            searchWord:"",
+            seen:false,
+            products:[]
+        }
     })
 </script>
 </body>

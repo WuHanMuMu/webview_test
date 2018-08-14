@@ -24,27 +24,21 @@ func startServer() string {
 	port := 8888
 	serverUrl := "http://127.0.0.1:" + strconv.Itoa(port)
 	e := echo.New()
-	t := &Template{
-		templates: template.Must(template.ParseGlob("view/*.html")),
-	}
-	e.Renderer = t
 	e.Use(middleware.Logger())
-	e.GET("/", func(c echo.Context) error {
-		//return c.String(http.StatusOK, "fffff")
-		return c.Render(http.StatusOK, "index.html", map[string]interface{}{
-			"serverUrl": serverUrl,
-		})
-	})
-
+	e.Static("/", "view")
 	e.POST("/search", func(context echo.Context) error {
+		var searchParam requests.SearchParam
 		search := context.FormValue("words")
 		page := context.FormValue("page")
+		if err := context.Bind(searchParam); err != nil {
+			fmt.Println(searchParam, "========>", searchParam.Words)
+		}
 		pageIndex, _ := strconv.Atoi(page)
+		fmt.Println("serach", search, page)
 		reply := requests.GetGoodsFromHtml(search, pageIndex)
 		return context.JSON(http.StatusOK, reply)
 	})
 	go e.Start(":" + strconv.Itoa(port))
-
 	return serverUrl
 }
 
