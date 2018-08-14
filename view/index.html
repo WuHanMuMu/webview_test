@@ -18,7 +18,9 @@
             <div>{{product.price}}</div>
         </li>
     </ul>
-   
+    <button v-if='seen' v-on:click="search(true)">
+        下页 
+    </button> 
 </div>
 
 
@@ -26,17 +28,16 @@
     var app = new Vue({
         el:"#app",
         methods:{
-
-            search:function(){
+            search:function(next){
                 var that = this
-                // var formData = new FormData()
-                // formData.set("words",this.searchWord)
-                // formData.set("page",0)
+                if (next) {
+                    this.page = this.page + 1
+                }
                 axios({
                     url:"/search",
                     data:{
                         words:this.searchWord,
-                        page:0
+                        page:this.page
                     },
                     method:"post",
                     config: { headers: {'Content-Type': 'multipart/x-www-form-urlencoded' }},
@@ -51,16 +52,19 @@
                 })
                 .then((data)=>{
                     that.seen = true
-                    console.log(data)
-                    that.products = data.data
-                    console.log(that.products)
+                    if (this.page == 0) {
+                        that.products = data.data
+                    }else {
+                        that.products.push(data.data)
+                    }   
                 })
             }
         },
         data:{
             searchWord:"",
             seen:false,
-            products:[]
+            products:[],
+            page:0
         }
     })
 </script>
