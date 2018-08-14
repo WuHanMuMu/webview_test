@@ -27,12 +27,12 @@ func startServer() string {
 	e.Use(middleware.Logger())
 	e.Static("/", "view")
 	e.POST("/search", func(context echo.Context) error {
-		var searchParam requests.SearchParam
+		//var searchParam requests.SearchParam
 		search := context.FormValue("words")
 		page := context.FormValue("page")
-		if err := context.Bind(searchParam); err != nil {
-			fmt.Println(searchParam, "========>", searchParam.Words)
-		}
+		//if err := context.Bind(searchParam); err != nil {
+		//	fmt.Println(searchParam, "========>", searchParam.Words)
+		//}
 		pageIndex, _ := strconv.Atoi(page)
 		fmt.Println("serach", search, page)
 		reply := requests.GetGoodsFromHtml(search, pageIndex)

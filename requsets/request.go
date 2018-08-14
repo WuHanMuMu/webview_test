@@ -36,6 +36,11 @@ type Product struct {
 	Shipping bool   `json:"shipping"`
 }
 
+type SearchParam struct {
+	Words string `json:"words" form:"name"`
+	Page  string `json:"page" form:"page"`
+}
+
 func GetGoods(pageNum, pageSize int, keyword string) Reply {
 	apiUrl := "https://www.dhgate.com/dhrec/recommend_for_recentview_featured_left.action"
 	request := gorequest.New()
@@ -61,6 +66,7 @@ func GetGoods(pageNum, pageSize int, keyword string) Reply {
 func GetGoodsFromHtml(word string, pageIndex int) []Product {
 	targetUrl := "https://www.dhgate.com/wholesale/search.do?act=search&sus=&searchkey=%s&catalog=#hpsearch1806"
 	word = strings.Replace(word, " ", "+", -1)
+	fmt.Println("wordsss", word, pageIndex)
 	if pageIndex == 0 {
 		targetUrl = fmt.Sprintf(targetUrl, word)
 	} else {
