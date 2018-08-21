@@ -1,0 +1,6 @@
+[deps]
+github.com/PuerkitoBio/goquery = 
+github.com/labstack/echo = 
+github.com/parnurzeal/gorequest = 
+github.com/zserge/webview = 
+
